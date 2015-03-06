@@ -1,9 +1,11 @@
 library(rCharts)
-library(shiny)
 library(shinydashboard)
+library(shinysky)
 source("shotLog.R")
 
 server <- function(input, output) {
+        # type ahead
+        
         data <- reactive({
                 data <- getShotLog(player_name = input$player, season = input$season)
                 
@@ -17,21 +19,44 @@ server <- function(input, output) {
         })
 }
 
-ui <- fluidPage(
-        sidebarLayout(
-                sidebarPanel(
-                        selectInput("player",
-                                    label = "Choose Player",
-                                    choices = c("John Wall", "Deron Williams"),
-                                    selected = "John Wall"),
-                        selectInput("season",
-                                    label = "Pick Season",
-                                    choices = c("2014-15", "2013-14"),
-                                    selected = "2014-15")
+ui <- dashboardPage(
+        dashboardHeader(title = "NBA Player Shot Logs"),
+        dashboardSidebar(
+                menuItem("Dashboard", tabName = "dashboard", icon=icon("dashboard")),
+                menuItem("Widgets", tabName = "widgets", icon = icon("th"))
+                
                 ),
-                mainPanel(showOutput("chart1", "Polycharts"))
+        dashboardBody(
+                # Boxes need to be put in a row (or column)
+                
+                tabItems(
+                        # First tab content
+                        tabItem(tabName = "dashboard",
+                                fluidRow(
+                                        column(width=3,
+                                               box(width=NULL, status="warning",
+                                                   title = "Controls",
+                                                   selectInput("player",
+                                                               label = "Choose Player",
+                                                               choices = c("John Wall", "Kevin Garnett"),
+                                                               selected = "John Wall"),
+                                                   selectInput("season",
+                                                               label = "Pick Season",
+                                                               choices = c("2014-15", "2013-14"),
+                                                               selected = "2014-15")                                                   
+                                                   )
+                                        )),
+                                fluidRow(
+                                        column(width=9,
+                                               box(width=NULL, solidHeader = TRUE,
+                                                   showOutput("chart1", "Polycharts")
+                                                   
+                                                   ))
+                                        
+                                )
+                )
+                )
         )
 )
-
 shinyApp(ui = ui, server = server)
 

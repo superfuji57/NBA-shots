@@ -42,8 +42,8 @@ getShotLog <- function(player_name="Ray Allen", season="2014-15") {
         # status_code(request)
         # content <- content(request, "text")
         player.json <- fromJSON(content(request, "text"))
-        player.data <- data.frame(player.json$resultSets[[3]])
-        names(player.data) <- tolower(player.json$resultSets[[2]][[1]])
+        player.data <- data.frame(do.call(rbind,player.json$resultSets[[1]]$rowSet))
+        names(player.data) <- tolower(player.json$resultSets[[1]][2]$headers)
         for (i in c(5, 6, 9, 10, 11, 12, 17, 18, 19)) {
                 player.data[,i] <- as.numeric(as.character(player.data[,i]))
         }
