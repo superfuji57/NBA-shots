@@ -7,7 +7,7 @@ server <- function(input, output) {
         # type ahead
         
         data <- reactive({
-                data <- getShotLog(player_name = input$player, season = input$season)
+                data <- getShotLog(player_name = input$player_name, season = input$season)
                 
         })
         
@@ -25,7 +25,7 @@ ui <- dashboardPage(
                 menuItem("Dashboard", tabName = "dashboard", icon=icon("dashboard")),
                 menuItem("Widgets", tabName = "widgets", icon = icon("th"))
                 
-                ),
+        ),
         dashboardBody(
                 # Boxes need to be put in a row (or column)
                 
@@ -36,25 +36,26 @@ ui <- dashboardPage(
                                         column(width=3,
                                                box(width=NULL, status="warning",
                                                    title = "Controls",
-                                                   selectInput("player",
-                                                               label = "Choose Player",
-                                                               choices = c("John Wall", "Kevin Garnett"),
-                                                               selected = "John Wall"),
+                                                   selectizeInput("player_name",
+                                                                  label = "Search",
+                                                                  choices = selectizePlayers,
+                                                                  selected = NULL,
+                                                                  multiple = FALSE),
                                                    selectInput("season",
                                                                label = "Pick Season",
                                                                choices = c("2014-15", "2013-14"),
                                                                selected = "2014-15")                                                   
-                                                   )
+                                               )
                                         )),
                                 fluidRow(
                                         column(width=9,
                                                box(width=NULL, solidHeader = TRUE,
                                                    showOutput("chart1", "Polycharts")
                                                    
-                                                   ))
+                                               ))
                                         
                                 )
-                )
+                        )
                 )
         )
 )
