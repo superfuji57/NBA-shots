@@ -3,6 +3,8 @@ library(rvest)
 library(jsonlite)
 
 load("./data/player.table.Rda")
+selectizePlayers <- player.table[player.table$to_year >= 2013, 4]
+selectizePlayers <- as.character(selectizePlayers[!is.na(selectizePlayers)])
 
 playerSearch <- function(player_name = ""){
         id <- player.table[player.table$display_first_last==player_name, 1]
