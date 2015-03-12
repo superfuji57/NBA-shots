@@ -1,6 +1,6 @@
 library(rCharts)
-library(shinydashboard)
-library(shinysky)
+library(shiny)
+library(shinythemes)
 source("shotLog.R")
 
 server <- function(input, output) {
@@ -19,45 +19,35 @@ server <- function(input, output) {
         })
 }
 
-ui <- dashboardPage(
-        dashboardHeader(title = "NBA Player Shot Logs"),
-        dashboardSidebar(
-                menuItem("Dashboard", tabName = "dashboard", icon=icon("dashboard")),
-                menuItem("Widgets", tabName = "widgets", icon = icon("th"))
-                
-        ),
-        dashboardBody(
-                # Boxes need to be put in a row (or column)
-                
-                tabItems(
-                        # First tab content
-                        tabItem(tabName = "dashboard",
-                                fluidRow(
-                                        column(width=3,
-                                               box(width=NULL, status="warning",
-                                                   title = "Controls",
-                                                   selectizeInput("player_name",
-                                                                  label = "Search",
-                                                                  choices = selectizePlayers,
-                                                                  selected = NULL,
-                                                                  multiple = FALSE),
-                                                   selectInput("season",
-                                                               label = "Pick Season",
-                                                               choices = c("2014-15", "2013-14"),
-                                                               selected = "2014-15")                                                   
-                                               )
-                                        )),
-                                fluidRow(
-                                        column(width=9,
-                                               box(width=NULL, solidHeader = TRUE,
-                                                   showOutput("chart1", "Polycharts")
-                                                   
-                                               ))
-                                        
-                                )
-                        )
-                )
-        )
+ui <- navbarPage(
+        title = "Exploring the NBA's Shot Logs",
+        tabPanel('First Chart',
+                 sidebarLayout(
+                         sidebarPanel(
+                                 h4("Controls"),
+                                 selectizeInput("player_name",
+                                                label = "Search",
+                                                choices = selectizePlayers,
+                                                selected = "Search",
+                                                multiple = FALSE),
+                                 selectInput("season",
+                                             label = "Pick Season",
+                                             choices = c("2014-15", "2013-14"),
+                                             selected = "2014-15")                                                   
+                                 ),
+                         mainPanel(
+                                 h3("Shots vs Distance"),
+                                 showOutput("chart1", "Polycharts")
+                                 )
+                         )
+                 ),
+        tabPanel('Length menu',        dataTableOutput('ex2')),
+        tabPanel('No pagination',      dataTableOutput('ex3')),
+        tabPanel('No filtering',       dataTableOutput('ex4')),
+        tabPanel('Individual filters', dataTableOutput('ex5')),
+        tabPanel('Function callback',  dataTableOutput('ex6'))                  
+
 )
+
 shinyApp(ui = ui, server = server)
 
