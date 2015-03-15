@@ -20,7 +20,11 @@ server <- function(input, output) {
         
         # data table
         dataDT <- reactive({data() %>% group_by(closest_defender) %>%
-                summarize(fgm = length(shot_result))
+                summarize(fg_pct = sum(shot_result=="made") / length(shot_result),
+                          avg_dist = mean(shot_dist),
+                          avg_dribble = mean(dribbles),
+                          fga = length(shot_result),
+                          fgm = sum(shot_result == "made"))
         })
         
         output$datatable <- renderDataTable(dataDT(), options=list(pageLength=10))
@@ -49,12 +53,7 @@ ui <- navbarPage(
                                  )
                          )
                  ),
-        tabPanel('Length menu',        dataTableOutput('datatable')),
-        tabPanel('No pagination',      dataTableOutput('ex3')),
-        tabPanel('No filtering',       dataTableOutput('ex4')),
-        tabPanel('Individual filters', dataTableOutput('ex5')),
-        tabPanel('Function callback',  dataTableOutput('ex6'))                  
-
+        tabPanel('Player Table', dataTableOutput('datatable'))
 )
 
 shinyApp(ui = ui, server = server)
