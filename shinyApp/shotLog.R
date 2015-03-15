@@ -1,13 +1,14 @@
 library(httr)
 library(rvest)
 library(jsonlite)
+options(stringsAsFactors = FALSE)
 
 load("./data/player.table.Rda")
-selectizePlayers <- player.table[player.table$to_year >= 2013, display_first_last]
+selectizePlayers <- player.table[player.table$to_year >= 2013, 4]
 selectizePlayers <- as.character(selectizePlayers[!is.na(selectizePlayers)])
 
 playerSearch <- function(player_name = ""){
-        id <- player.table[player.table$display_first_last==player_name, person_id]
+        id <- player.table[player.table$display_first_last==player_name, 1]
         if (length(id) == 0) return("No player found")
         return(id)
 }
@@ -16,6 +17,7 @@ playerSearch <- function(player_name = ""){
 shotStatsURL <- function(playerID=951, from="", to="", gameSegment="", nGames=0, location="",month=0, outcome="",
                          period=0, season="2014-15", seasonSegment="", seasonType="Regular+Season",
                          teamID=0, vsConference="", vsDivision="") {
+        # GET URL
         shots.url <- paste0("http://stats.nba.com/stats/playerdashptshotlog?DateFrom=", from,
                             "&DateTo=", to, 
                             "&GameSegment=", gameSegment,
@@ -44,8 +46,8 @@ getShotLog <- function(player_name="Ray Allen", season="2014-15") {
         # status_code(request)
         # content <- content(request, "text")
         player.json <- fromJSON(content(request, "text"))
-        player.data <- data.frame(do.call(rbind,player.json$resultSets[[1]]$rowSet))
-        names(player.data) <- tolower(player.json$resultSets[[1]][2]$headers)
+        player.data <- data.frame(player.json$resultSets[[3]])
+        names(player.data) <- tolower(player.json$resultSets[[2]][[1]])
         for (i in c(5, 6, 9, 10, 11, 12, 17, 18, 19)) {
                 player.data[,i] <- as.numeric(as.character(player.data[,i]))
         }
