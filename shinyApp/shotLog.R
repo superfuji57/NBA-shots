@@ -1,7 +1,6 @@
 library(httr)
 library(rvest)
 library(jsonlite)
-options(stringsAsFactors = FALSE)
 
 load("./data/player.table.Rda")
 selectizePlayers <- player.table[player.table$to_year >= 2013, 4]
@@ -46,7 +45,7 @@ getShotLog <- function(player_name="Ray Allen", season="2014-15") {
         # status_code(request)
         # content <- content(request, "text")
         player.json <- fromJSON(content(request, "text"))
-        player.data <- data.frame(player.json$resultSets[[3]])
+        player.data <- data.frame(player.json$resultSets[[3]], stringsAsFactors = FALSE)
         names(player.data) <- tolower(player.json$resultSets[[2]][[1]])
         for (i in c(5, 6, 9, 10, 11, 12, 17, 18, 19)) {
                 player.data[,i] <- as.numeric(as.character(player.data[,i]))
