@@ -3,6 +3,7 @@ library(shiny)
 library(shinythemes)
 library(DT)
 library(dplyr)
+library(waffle)
 source("shotLog.R")
 
 server <- function(input, output) {
@@ -16,6 +17,16 @@ server <- function(input, output) {
         output$chart1 <- renderChart2({
                 n1 <- rPlot(shot_dist ~ shot_clock, data = data(), color = "shot_result", type = "point")
                 return(n1) 
+        })
+        
+        output$waffle1 <- renderPlot({
+                waffle_data <- group_by(data(), shot_result) %>%
+                        summarize(count = n())
+                        
+                colors <- sample(colors(), length(waffle_data[,1]), replace = FALSE)
+                parts <- c(waffle_data$count)
+                
+                waffle(waffle_data$count/2, colors=c("green", "red"))        
         })
         
         # data table
@@ -53,7 +64,8 @@ ui <- navbarPage(
                                  )
                          )
                  ),
-        tabPanel('Player Table', dataTableOutput('datatable'))
+        tabPanel('Player Table', dataTableOutput('datatable')),
+        tabPanel('Waffle Chart', plotOutput("waffle1"))
 )
 
 shinyApp(ui = ui, server = server)
