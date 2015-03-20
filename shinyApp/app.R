@@ -19,16 +19,6 @@ server <- function(input, output) {
                 return(n1) 
         })
         
-        output$waffle1 <- renderPlot({
-                waffle_data <- group_by(data(), shot_result) %>%
-                        summarize(count = n())
-                        
-                colors <- sample(colors(), length(waffle_data[,1]), replace = FALSE)
-                parts <- c(waffle_data$count)
-                
-                waffle(waffle_data$count/2, colors=c("green", "red"))        
-        })
-        
         # data table
         dataDT <- reactive({data() %>% group_by(closest_defender) %>%
                 summarize(fg_pct = sum(shot_result=="made") / length(shot_result),
@@ -38,7 +28,17 @@ server <- function(input, output) {
                           fgm = sum(shot_result == "made"))
         })
         
-        output$datatable <- renderDataTable(dataDT(), options=list(pageLength=10))
+        output$datatable <- renderDataTable(datatable(dataDT(), options=list(pageLength=10)))
+        
+        output$waffle1 <- renderPlot({
+                waffle_data <- group_by(data(), shot_result) %>%
+                        summarize(count = n())
+                
+                colors <- sample(colors(), length(waffle_data[,1]), replace = FALSE)
+                parts <- c(waffle_data$count)
+                
+                waffle(waffle_data$count/2, colors=c("green", "red"))        
+        })
         
 }
 
