@@ -1,6 +1,8 @@
 library(httr)
 library(rvest)
 library(jsonlite)
+library(lubridate)
+library(tidyr)
 
 load("./data/player.table.Rda")
 selectizePlayers <- player.table[player.table$to_year >= 2013, 4]
@@ -50,6 +52,8 @@ getShotLog <- function(player_name="Ray Allen", season="2014-15") {
         for (i in c(5, 6, 9, 10, 11, 12, 17, 18, 19)) {
                 player.data[,i] <- as.numeric(as.character(player.data[,i]))
         }
+        player.data <- separate(player.data, matchup, into = c("date", "matchup"), sep = "-") %>%
+                transform(date = mdy(date))
         return(player.data)
         
 }
