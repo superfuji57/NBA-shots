@@ -3,14 +3,16 @@ library(shiny)
 library(shinythemes)
 library(DT)
 library(dplyr)
-library(waffle)
+library(htmlwidgets)
+library(tidyr)
+library(lubridate)
 source("shotLog.R")
 
 server <- function(input, output) {
         
         # Shot log data for player
         data <- reactive({
-                getShotLog(player_name = input$player_name, season = input$season)         
+                getShotLog(player_name = input$player_name, season = input$season)
         })
         
         # scatterplot of shot dist vs time left on shot clock
@@ -30,15 +32,19 @@ server <- function(input, output) {
         
         output$datatable <- renderDataTable(datatable(dataDT(), options=list(pageLength=10)))
         
-        output$waffle1 <- renderPlot({
-                waffle_data <- group_by(data(), shot_result) %>%
-                        summarize(count = n())
-                
-                colors <- sample(colors(), length(waffle_data[,1]), replace = FALSE)
-                parts <- c(waffle_data$count)
-                
-                waffle(waffle_data$count/2, colors=c("green", "red"))        
-        })
+        ## waffle charts code
+        heatData <- reactive({heat_data(data())})
+        
+        output$heat <- renderCalheatmap({
+                return(result_map(heatData()))
+                })
+        
+        #output$test <- renderText(heatData()$tip_def[1])
+        #output$waffle1 <- renderPlot({
+                #data %>% group_by(month(date)) %>%
+                #        summarize(count=n())
+         #       x
+          #      })
         
 }
 
@@ -65,7 +71,12 @@ ui <- navbarPage(
                          )
                  ),
         tabPanel('Player Table', dataTableOutput('datatable')),
-        tabPanel('Waffle Chart', plotOutput("waffle1"))
+        tabPanel('Heat Chart', sidebarLayout(
+                sidebarPanel(h2("Hi")),
+                mainPanel(
+                calheatmapOutput("heat",width = 20))
+        )
+        )
 )
 
 shinyApp(ui = ui, server = server)

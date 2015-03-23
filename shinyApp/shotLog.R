@@ -3,8 +3,11 @@ library(rvest)
 library(jsonlite)
 library(lubridate)
 library(tidyr)
+library(rChartsCalmap)
+library(rChartsCalendar)
 
 load("./data/player.table.Rda")
+
 selectizePlayers <- player.table[player.table$to_year >= 2013, 4]
 selectizePlayers <- as.character(selectizePlayers[!is.na(selectizePlayers)])
 
@@ -58,3 +61,82 @@ getShotLog <- function(player_name="Ray Allen", season="2014-15") {
         
 }
 
+shot_waffle <- function(data, month) {
+        data <- filter(data, month(date)==month)
+        part_shots <- rep(1, nrow(data))
+        names(part_shots) <- data$tip
+        colorKey <- rep("red", nrow(data))
+        colorKey[data$shot_result=="made"] <- "green"
+        waffle(part_shots, colors=colorKey, rows = 5, title = as.character(month(month, label = T, abbr = F)),
+               size=1)
+}
+
+# heat function cumsum, returns to 0 on a miss
+
+heat <- function(shots){
+        heat <- vector()
+        for (i in 1:length(shots)){
+                if (i == 1) {
+                        if (shots[i] == 1) heat[i] <- 1
+                        else heat[i] <- 0
+                }
+                else if (shots[i] == 1) heat[i] <- heat[i-1] + 1
+                else heat[i] <- 0
+        }
+        return(heat)
+}
+
+# cal map
+
+heat_data <- function(shotLog) {
+        arrange(shotLog, date) %>% 
+        transmute(date, shot_result, 
+                  tip_def = paste("Defender:", as.character(closest_defender))) %>%
+        group_by(month = month(date)) %>%
+        mutate(datehour = ymd(paste(year(date[1]), month(date[1]),1, sep = "-")) + hours(row_number()+4),
+               made = (shot_result=="made")*1,
+               heat = heat(made))
+}
+
+result_map <- function(heatData){
+        
+        r1 <- calheatmap(x="datehour", y="made",
+                 itemSelector=c('#cellradius-b', '#colLimit-b'),
+                 cellSize = 15,
+                 cellRadius = 10,
+                 #tooltip = "true",
+                 data=heatData,
+                 domain="month",
+                 label = c("position"="left"),
+                 domainGutter = 10,
+                 subDomain="hour",
+                 rowLimit = 10,
+                 range=length(unique(heatData$month)),
+                 verticalOrientation = "true",
+                 displayLegend = "false",
+                 start = as.character(heatData$date[1]),
+                 legend = seq(0,1.1,.1),
+                 legendColors = c("min"="white", "max"="green", "empty"="lightgrey", "base"="white"))
+        return(r1)
+}
+
+heat_map <- function(heatData){
+        r1 <- plotCalMap(x="datehour", y="heat",
+                         itemSelector=c('#tooltip-b', '#cellradius-b', '#colLimit-b'),
+                         cellSize = 15,
+                         cellRadius = 10,
+                         tooltip = "true",
+                         data=heatData,
+                         domain="month",
+                         #label = c("position"="left"),
+                         domainGutter = 10,
+                         subDomain="hour",
+                         rowLimit = 10,
+                         range=length(unique(heatData$month)),
+                         verticalOrientation = "true",
+                         displayLegend = "false",
+                         start = as.character(heatData$date[1]),
+                         legend = seq(0,5.5,.5),
+                         legendColors = c("min"="white", "max"="red", "empty"="lightgrey", "base"="white"))
+        return(r1)
+}
