@@ -35,11 +35,14 @@ server <- function(input, output) {
         ## waffle charts code
         heatData <- reactive({heat_data(data())})
         
-        
-        output$heat <- renderCalheatmap({
-                data <- heatData()
-                chart <- result_map(data)
-                return(chart)
+        observe({
+                data()
+                output$heat <- renderCalheatmap({
+                        data <- heatData()
+                        chart <- result_map(data)
+                        return(chart)
+                })
+                
                 })
         
         #output$test <- renderText(heatData()$tip_def[1])

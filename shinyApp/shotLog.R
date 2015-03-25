@@ -3,6 +3,7 @@ library(rvest)
 library(jsonlite)
 library(lubridate)
 library(tidyr)
+library(dplyr)
 library(rChartsCalmap)
 library(rChartsCalendar)
 
@@ -99,14 +100,14 @@ heat_data <- function(shotLog) {
 }
 
 result_map <- function(heatData){
-        r1 <- calheatmap(x="datehour", y="made",
+        r1 <- calheatmap(x="datehour", y="heat",
                  itemSelector=c('#cellradius-b', '#colLimit-b'),
                  cellSize = 15,
                  cellRadius = 10,
                  tooltip = 'FALSE',
                  data=heatData,
                  domain="month",
-                 #label = c("position"="left"),
+                 label = c("position"="left"),
                  domainGutter = 10,
                  subDomain="hour",
                  rowLimit = 10,
@@ -121,14 +122,14 @@ result_map <- function(heatData){
 
 heat_map <- function(heatData){
         
-        r1 <- plotCalMap(x="datehour", y="heat",
-                         itemSelector=c('#tooltip-b', '#cellradius-b', '#colLimit-b'),
+        r1 <- calheatmap(x="datehour", y="heat",
+                         itemSelector=c('#cellradius-b', '#colLimit-b'),
                          cellSize = 15,
                          cellRadius = 10,
-                         tooltip = "true",
+                         tooltip = FALSE,
                          data=heatData,
                          domain="month",
-                         #label = c("position"="left"),
+                         label = c("position"="left"),
                          domainGutter = 10,
                          subDomain="hour",
                          rowLimit = 10,
@@ -136,7 +137,7 @@ heat_map <- function(heatData){
                          verticalOrientation = "true",
                          displayLegend = "false",
                          start = as.character(heatData$date[1]),
-                         legend = seq(0,5.5,.5),
+                         legend = seq(.1, 6 , .1),
                          legendColors = c("min"="white", "max"="red", "empty"="lightgrey", "base"="white"))
         return(r1)
 }
