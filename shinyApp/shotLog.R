@@ -99,28 +99,28 @@ heat_data <- function(shotLog) {
 }
 
 result_map <- function(heatData){
-        
         r1 <- calheatmap(x="datehour", y="made",
                  itemSelector=c('#cellradius-b', '#colLimit-b'),
                  cellSize = 15,
                  cellRadius = 10,
-                 #tooltip = "true",
+                 tooltip = 'FALSE',
                  data=heatData,
                  domain="month",
-                 label = c("position"="left"),
+                 #label = c("position"="left"),
                  domainGutter = 10,
                  subDomain="hour",
                  rowLimit = 10,
                  range=length(unique(heatData$month)),
                  verticalOrientation = "true",
-                 displayLegend = "false",
+                 displayLegend = "FALSE",
                  start = as.character(heatData$date[1]),
-                 legend = seq(0,1.1,.1),
+                 legend = seq(.1,1.2,.1),
                  legendColors = c("min"="white", "max"="green", "empty"="lightgrey", "base"="white"))
         return(r1)
 }
 
 heat_map <- function(heatData){
+        
         r1 <- plotCalMap(x="datehour", y="heat",
                          itemSelector=c('#tooltip-b', '#cellradius-b', '#colLimit-b'),
                          cellSize = 15,

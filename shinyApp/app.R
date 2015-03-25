@@ -1,7 +1,7 @@
 library(rCharts)
 library(shiny)
 library(shinythemes)
-library(DT)
+#library(DT)
 library(dplyr)
 library(htmlwidgets)
 library(tidyr)
@@ -35,8 +35,11 @@ server <- function(input, output) {
         ## waffle charts code
         heatData <- reactive({heat_data(data())})
         
+        
         output$heat <- renderCalheatmap({
-                return(result_map(heatData()))
+                data <- heatData()
+                chart <- result_map(data)
+                return(chart)
                 })
         
         #output$test <- renderText(heatData()$tip_def[1])
@@ -48,36 +51,27 @@ server <- function(input, output) {
         
 }
 
-ui <- navbarPage(
+ui <- fluidPage(
         title = "Exploring the NBA's Shot Logs",
-        tabPanel('First Chart',
-                 sidebarLayout(
-                         sidebarPanel(
-                                 h4("Controls"),
-                                 selectizeInput("player_name",
-                                                label = "Search",
-                                                choices = selectizePlayers,
-                                                selected = "Search",
-                                                multiple = FALSE),
-                                 selectInput("season",
-                                             label = "Pick Season",
-                                             choices = c("2014-15", "2013-14"),
-                                             selected = "2014-15")                                                   
-                                 ),
-                         mainPanel(
-                                 h3("Shots vs Distance"),
-                                 showOutput("chart1", "Polycharts")                                 
-                                 )
-                         )
-                 ),
-        tabPanel('Player Table', dataTableOutput('datatable')),
-        tabPanel('Heat Chart', sidebarLayout(
-                sidebarPanel(h2("Hi")),
-                mainPanel(
-                calheatmapOutput("heat",width = 20))
+        fluidRow(
+                column(width=3,
+                       h4("Controls")),
+                column(width= 5,
+                       selectizeInput("player_name",
+                                label = "Search",
+                                choices = selectizePlayers,
+                                selected = "Search",
+                                multiple = FALSE), 
+                       selectInput("season",
+                             label = "Pick Season",
+                             choices = c("2014-15", "2013-14"),
+                             selected = "2014-15")                                                   
+                 )),
+        fluidRow(
+                column(width=6,
+                       calheatmapOutput("heat",width = 20))
+                )
         )
-        )
-)
 
 shinyApp(ui = ui, server = server)
 
