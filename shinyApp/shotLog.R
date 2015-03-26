@@ -62,16 +62,6 @@ getShotLog <- function(player_name="Ray Allen", season="2014-15") {
         
 }
 
-shot_waffle <- function(data, month) {
-        data <- filter(data, month(date)==month)
-        part_shots <- rep(1, nrow(data))
-        names(part_shots) <- data$tip
-        colorKey <- rep("red", nrow(data))
-        colorKey[data$shot_result=="made"] <- "green"
-        waffle(part_shots, colors=colorKey, rows = 5, title = as.character(month(month, label = T, abbr = F)),
-               size=1)
-}
-
 # heat function cumsum, returns to 0 on a miss
 
 heat <- function(shots){
@@ -122,11 +112,11 @@ result_map <- function(heatData){
 
 heat_map <- function(heatData){
         
-        r1 <- calheatmap(x="datehour", y="heat",
+        r1 <- plotCalMap(x="datehour", y="heat",
                          itemSelector=c('#cellradius-b', '#colLimit-b'),
                          cellSize = 15,
                          cellRadius = 10,
-                         tooltip = FALSE,
+                         #tooltip = FALSE,
                          data=heatData,
                          domain="month",
                          label = c("position"="left"),
