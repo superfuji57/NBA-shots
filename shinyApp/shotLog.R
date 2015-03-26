@@ -7,7 +7,7 @@ library(dplyr)
 library(rChartsCalmap)
 library(rChartsCalendar)
 
-load("./data/player.table.Rda")
+load("~/Projects/NBA-shots/shinyApp/data/player.table.Rda")
 
 selectizePlayers <- player.table[player.table$to_year >= 2013, 4]
 selectizePlayers <- as.character(selectizePlayers[!is.na(selectizePlayers)])
@@ -138,6 +138,6 @@ heat_map <- function(heatData){
                          displayLegend = "false",
                          start = as.character(heatData$date[1]),
                          legend = seq(.1, 6 , .1),
-                         legendColors = c("min"="white", "max"="red", "empty"="lightgrey", "base"="white"))
+                         legendColors = c("min"="steelblue", "max"="red", "empty"="lightgrey", "base"="white"))
         return(r1)
 }
