@@ -7,7 +7,7 @@ library(dplyr)
 library(rChartsCalmap)
 library(rChartsCalendar)
 
-load("~/Projects/NBA-shots/shinyApp/data/player.table.Rda")
+load("./data/player.table.Rda")
 
 selectizePlayers <- player.table[player.table$to_year >= 2013, 4]
 selectizePlayers <- as.character(selectizePlayers[!is.na(selectizePlayers)])
@@ -90,11 +90,11 @@ heat_data <- function(shotLog) {
 }
 
 result_map <- function(heatData){
-        r1 <- calheatmap(x="datehour", y="heat",
+        r1 <- plotCalMap(x="datehour", y="heat",
                  itemSelector=c('#cellradius-b', '#colLimit-b'),
                  cellSize = 15,
                  cellRadius = 10,
-                 tooltip = 'FALSE',
+                 tooltip = FALSE,
                  data=heatData,
                  domain="month",
                  label = c("position"="left"),
@@ -102,8 +102,8 @@ result_map <- function(heatData){
                  subDomain="hour",
                  rowLimit = 10,
                  range=length(unique(heatData$month)),
-                 verticalOrientation = "true",
-                 displayLegend = "FALSE",
+                 verticalOrientation = TRUE,
+                 displayLegend = FALSE,
                  start = as.character(heatData$date[1]),
                  legend = seq(.1,1.2,.1),
                  legendColors = c("min"="white", "max"="green", "empty"="lightgrey", "base"="white"))
@@ -116,7 +116,7 @@ heat_map <- function(heatData){
                          itemSelector=c('#cellradius-b', '#colLimit-b'),
                          cellSize = 15,
                          cellRadius = 10,
-                         #tooltip = FALSE,
+                         tooltip = FALSE,
                          data=heatData,
                          domain="month",
                          label = c("position"="left"),
@@ -127,7 +127,7 @@ heat_map <- function(heatData){
                          verticalOrientation = "true",
                          displayLegend = "false",
                          start = as.character(heatData$date[1]),
-                         legend = seq(.1, 6 , .1),
-                         legendColors = c("min"="steelblue", "max"="red", "empty"="lightgrey", "base"="white"))
+                         legend = seq(1, 6 , .2),
+                         legendColors = c("min"="#DCE7E8", "max"="#FF5D05", "empty"="lightgrey", "base"="white"))
         return(r1)
 }

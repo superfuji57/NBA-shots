@@ -35,16 +35,12 @@ server <- function(input, output) {
         ## waffle charts code
         heatData <- reactive({heat_data(data())})
         
-        observe({
-                data()
-                output$heat <- renderCalheatmap({
+        output$heat <- renderCalheatmap({
                         data <- heatData()
                         chart <- result_map(data)
                         return(chart)
                 })
-                
-                })
-        
+         
         #output$test <- renderText(heatData()$tip_def[1])
         #output$waffle1 <- renderPlot({
                 #data %>% group_by(month(date)) %>%
